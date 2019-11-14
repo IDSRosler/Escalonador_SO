@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/igor/CLionProjects/Escalonador_de_processos/main.cpp
+stdlib.h
+-
+list
+-
+iostream
+-
+fstream
+-
+string
+-
+
