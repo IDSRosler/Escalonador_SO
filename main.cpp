@@ -101,9 +101,9 @@ public:
             }
             idx++;
         }
-        cout << it->getDuracao() << endl;
+        //cout << it->getDuracao() << endl;
         it->decDuracao(this->quantum);
-        cout << it->getDuracao() << endl;
+        //cout << it->getDuracao() << endl;
         this->time += this->quantum;
         
         // Testa se entra algum processo NOVO no fim da fila
@@ -180,8 +180,9 @@ int main(int argc, char *argv[]) {
         processosFile.close();
         // cout << "tam: " << processos.size() << endl;
         FilaRR fr = FilaRR(processos);
+        fr.getPilha();
         while(fr.tic()){
-            // fr.getPilha();
+            fr.getPilha();
         }
     }
     else cout << "Unable to open file" << endl;
