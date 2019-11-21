@@ -8,7 +8,7 @@ using namespace std;
 
 class Processo{
 private:
-    int chegada, duracao, memoria, prioridade;
+    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada;
 
 public:
     Processo(int chegada, int duracao, int memoria, int prioridade){
@@ -16,31 +16,37 @@ public:
         this->duracao    = duracao;
         this->memoria    = memoria;
         this->prioridade = prioridade;
+        this->duracao_projetada = duracao;
     }
+    // Gets
     int getChegada(){
         return this->chegada;
     }
-
-};
-
-class StatusProcesso{
-private:
-    int chegada, lancamento, duracao_projetada, duracao_observada;
-public:
-    StatusProcesso(int chegada, int lancamento, int duracao_projetada, int duracao_observada){
-        this->chegada = chegada;
-        this->lancamento = lancamento;
-        this->duracao_projetada =  duracao_projetada;
-        this->duracao_observada =  duracao_observada;
+    int getDuracao(){
+        return this->duracao;
     }
+    // Sets
+    void setDuracaoObservada(int d){
+        this->duracao_observada = d;
+    }
+
+    void decDuracao(int d){
+        if(d > this->duracao){
+            this->duracao = 0;
+        } else{
+            this->duracao -= d;
+        }
+    }
+
 };
+
+
 
 class FilaRR{
 private:
     list<Processo> processos;
     int quantum = 1;    // Acredito que equivalente ao slice
     int time;
-    int processoAtual;
     list<int> fila;
 public:
     FilaRR(list<Processo> processos){
@@ -48,6 +54,7 @@ public:
         this->time = 0;
         int pa = 1000;
         int idx = 0;
+        int processoAtual = 0;
         // Como iterar sobre uma lista
         // Esse metodo so serve se a ordem do txt for modificada
         // Do jeito que esta e inutil
@@ -55,26 +62,78 @@ public:
         for(it = processos.begin(); it != processos.end(); ++it){
             if(it->getChegada() < pa){
                 pa = it->getChegada();
-                this->processoAtual = idx; 
+                processoAtual = idx;
             }
             idx++;
         }
         fila.push_back(processoAtual);
         this->time = 0;
     }
-    int getProcessoAtual(){
-        return this->processoAtual;
+// Gets
+
+    int getTime(){
+        return this->time;
     }
-    void tic(){
-        time += quantum;
+    void getPilha(){
+        list<int> :: iterator it;
+        cout << "fila: ";
+        for(it = this->fila.begin(); it != this->fila.end(); ++it){
+            cout << *it << " ";
+        }
+        cout << endl;
+    }
+
+    int tic(){
+        list<Processo> :: iterator it, it2;
         int idx=0;
-        list<Processo> :: iterator it;
+        if(this->fila.empty()){
+            this->time += this->quantum;
+            return 0;
+        } 
+        int idxAtual = this->fila.front();
+        this->fila.pop_front();
+        //cout << "idxAtual: " << idxAtual << endl; 
+
+        // it = processo[idxAtual]
         for(it = processos.begin(); it != processos.end(); ++it){
-            if(idx == this->processoAtual){
+            if(idx == idxAtual){
                 break;
             }
+            idx++;
         }
-        it->
+        cout << it->getDuracao() << endl;
+        it->decDuracao(this->quantum);
+        cout << it->getDuracao() << endl;
+        this->time += this->quantum;
+        
+        // Testa se entra algum processo NOVO no fim da fila
+        // Se sim insere no fim da fila
+        idx = 0;
+        for(it2 = processos.begin(); it2 != processos.end(); ++it2){
+            if(it2->getChegada() <= this->time && it2->getChegada() + this->quantum > this->getTime()){
+                this->fila.push_back(idx);
+            }
+            idx++;
+        }
+
+
+        // Ve se o processo[idxAtual] ja terminou
+        // Se sim armazena a duracao
+        // Se nao insere ele novamente no final da fila
+        if(it->getDuracao() == 0){
+            it->setDuracaoObservada(this->time);
+        } else{
+            this->fila.push_back(idxAtual);
+        }
+
+        int d=0;
+        for(it = processos.begin(); it != processos.end(); ++it){
+            d+= it->getDuracao();
+        }
+        if(d == 0){
+            return 0;
+        }        
+        return 1;
     }  
 
     
@@ -83,7 +142,6 @@ public:
 
 int main(int argc, char *argv[]) {
     list<Processo> processos;
-    list<StatusProcesso> sp;
     int numCPU      = atoi(argv[1]); //O número de CPUs disponíveis
     // Pinho acredita que nao precisa passar o slice
     //int slice       = atoi(argv[2]); //Duração do slice de CPU entregue a cada processo
@@ -114,16 +172,17 @@ int main(int argc, char *argv[]) {
             getline (processosFile,line, ',');
 
             processos.push_back(Processo(chegada, duracao, memoria, prioridade));
-            sp.push_back(StatusProcesso(chegada, 0, duracao, 0));
             cout << "Chegada    : " << chegada << endl;
             cout << "Duração    : " << duracao << endl;
             cout << "Memória    : " << memoria << endl;
             cout << "Prioridade : " << prioridade << "\n" << endl;
         }
         processosFile.close();
-        cout << "tam: " << processos.size() << endl;
+        // cout << "tam: " << processos.size() << endl;
         FilaRR fr = FilaRR(processos);
-        cout << fr.getProcessoAtual() << endl;
+        while(fr.tic()){
+            // fr.getPilha();
+        }
     }
     else cout << "Unable to open file" << endl;
 
