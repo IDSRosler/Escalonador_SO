@@ -134,11 +134,20 @@ public:
             return 0;
         }        
         return 1;
-    }  
-
-    
+    } 
 };
 
+class CPU{
+private:
+    int nFilas;
+    list<FilaRR> filas; 
+public:
+    CPU(int nFilas, list<Processo> processos){
+        this->nFilas = nFilas;
+        
+    }
+
+};
 
 int main(int argc, char *argv[]) {
     list<Processo> processos;
@@ -179,6 +188,13 @@ int main(int argc, char *argv[]) {
         }
         processosFile.close();
         // cout << "tam: " << processos.size() << endl;
+        // O que fazer:
+        // primeiro, botar uma fila RR em cada cpu a medida que os processos vem chegando
+        // quando todas CPUs estao cheias, adicionar os processos nas filasRR mais vazias
+        // Temos que escolher um numero fixo de filasRR por CPU
+        // Vamos enxendo as filas na medida que vao aparecendo novos processos
+        // Ideia: criar uma classe CPU que gerencia a quantidade de filasRR na CPU
+        // Criar uma classe escalonador que gerencia os processos para as CPUs 
         FilaRR fr = FilaRR(processos);
         fr.getPilha();
         while(fr.tic()){
