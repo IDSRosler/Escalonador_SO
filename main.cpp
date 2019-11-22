@@ -9,7 +9,7 @@ using namespace std;
 
 class Processo{
 private:
-    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada;
+    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual;
 
 public:
     Processo(int chegada, int duracao, int memoria, int prioridade){
@@ -18,6 +18,7 @@ public:
         this->memoria    = memoria;
         this->prioridade = prioridade;
         this->duracao_projetada = duracao;
+        this->prioridade_atual = prioridade;
     }
     // Gets
     int getChegada(){
@@ -25,6 +26,9 @@ public:
     }
     int getDuracao(){
         return this->duracao;
+    }
+    int getPrioridade(){
+        return this->prioridade;
     }
     // Sets
     void setDuracaoObservada(int d){
@@ -155,32 +159,30 @@ public:
 class CPU{
 private:
     int nFilas;
-    list<FilaRR> filas; 
+    vector<FilaRR> filas; 
 public:
-    CPU(int nFilas, list<Processo> processos){
-        this->nFilas = nFilas;
+    CPU(list<Processo> processos){
+        this->nFilas = 5;
         int idx = 0;
         list<Processo> :: iterator it;
         vector<list<Processo>> listP;
         // Vai mandando um processo pra cada FilaRR
+        for(int i = 0; i < this->nFilas; i++){
+            list<Processo> p;
+            listP.push_back(p);            
+        }
         while(!processos.empty()){
-            if(idx < nFilas){
-                list<Processo> p;
-                p.push_back(processos.front());
-                listP.push_back(p);
-            } else{
-            listP[idx%nFilas].push_back(processos.front());
-            }
+            listP[processos.front().getPrioridade()].push_back(processos.front());
             processos.pop_front();
-            idx++;
-            
         }
         for (int i = 0; i < nFilas; i++){
             this->filas.push_back(FilaRR(listP[i]));
         }
     }
+    // Errado, teria que executar somente uma das filas 
+    // e olhar a prioridade
     int tic(){
-        list<FilaRR> :: iterator it;
+        vector<FilaRR> :: iterator it;
         int naoTerminou = 0;
         for(it = this->filas.begin(); it != this->filas.end(); ++it){
             naoTerminou += it->tic();
@@ -188,7 +190,7 @@ public:
         return naoTerminou;
     }
     void getInfo(){
-        list<FilaRR> :: iterator it;
+        vector<FilaRR> :: iterator it;
         int idx = 0;
         for(it = this->filas.begin(); it != this->filas.end(); ++it){
             cout << "Fila(" << idx << "): ";
@@ -196,6 +198,7 @@ public:
             idx++;
         }
     }
+  
 
 };
 
@@ -245,7 +248,7 @@ int main(int argc, char *argv[]) {
         // Vamos enxendo as filas na medida que vao aparecendo novos processos
         // Ideia: criar uma classe CPU que gerencia a quantidade de filasRR na CPU
         // Criar uma classe escalonador que gerencia os processos para as CPUs 
-        CPU c = CPU(2, processos);
+        CPU c = CPU(processos);
         c.getInfo();
         while(c.tic()){
             c.getInfo();
