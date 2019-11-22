@@ -10,7 +10,7 @@ using namespace std;
 
 class Processo{
 private:
-    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual, pid;
+    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual, pid, decPrioridade;
 
 public:
     Processo(int chegada, int duracao, int memoria, int prioridade, int pid){
@@ -21,6 +21,7 @@ public:
         this->duracao_projetada = duracao;
         this->prioridade_atual = prioridade;
         this->pid = pid;
+        this->decPrioridade = 1;
     }
     // Gets
     int getChegada(){
@@ -44,6 +45,27 @@ public:
             this->duracao = 0;
         } else{
             this->duracao -= d;
+        }
+    }
+    void changePrioridade(){
+        if(this->prioridade == 0 || this->prioridade == 4){
+            return;
+        } else{
+            if(this->decPrioridade){
+                if(this->prioridade_atual < 4){
+                    this->prioridade_atual += 1;
+                } else{
+                    this->decPrioridade = 0;
+                    this->prioridade_atual -= 1;
+                }
+            } else{
+                if(this->prioridade_atual > 1){
+                    this->prioridade_atual -= 1;
+                } else{
+                    this->decPrioridade = 1;
+                    this->prioridade_atual += 1;
+                }
+            }
         }
     }
 };
@@ -89,6 +111,9 @@ public:
             cout << this->processos[*it].getPid() << " ";
         }
         cout << endl;
+    }
+    int isEmpty(){
+        return !(this->fila.size());
     }
 
     int tic(){
@@ -184,6 +209,17 @@ public:
     // e olhar a prioridade
     int tic(){
         vector<FilaRR> :: iterator it;
+        int filaAtual = -1;
+        for(int i=0; i<this->filas.size();i++){
+            if(!(this->filas[i].isEmpty())){
+                filaAtual = i;
+                break;
+            }
+        }
+        if(filaAtual != -1){
+            this->filas[filaAtual].tic();
+        }
+       
         int naoTerminou = 0;
         for(it = this->filas.begin(); it != this->filas.end(); ++it){
             naoTerminou += it->tic();
