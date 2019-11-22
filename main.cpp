@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -144,7 +145,29 @@ private:
 public:
     CPU(int nFilas, list<Processo> processos){
         this->nFilas = nFilas;
-        
+        int idx = 0;
+        list<Processo> :: iterator it;
+        vector<list<Processo>> listP;
+        // Vai mandando um processo pra cada FilaRR
+        while(!processos.empty()){
+            listP[idx].push_back(processos.front());
+            processos.pop_front();
+            idx++;
+            if(idx = nFilas){
+                idx = 0;
+            }
+        }
+        for (int i = 0; i < nFilas; i++){
+            this->filas.push_back(FilaRR(listP[i]));
+        }
+    }
+    int tic(){
+        list<FilaRR> :: iterator it;
+        int naoTerminou = 0;
+        for(it = this->filas.begin(); it != this->filas.end(); ++it){
+            naoTerminou += it->tic();
+        }
+        return naoTerminou;
     }
 
 };
