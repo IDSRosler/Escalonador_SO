@@ -5,20 +5,22 @@
 #include <string>
 #include <vector>
 
+
 using namespace std;
 
 class Processo{
 private:
-    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual;
+    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual, pid;
 
 public:
-    Processo(int chegada, int duracao, int memoria, int prioridade){
+    Processo(int chegada, int duracao, int memoria, int prioridade, int pid){
         this->chegada    = chegada;
         this->duracao    = duracao;
         this->memoria    = memoria;
         this->prioridade = prioridade;
         this->duracao_projetada = duracao;
         this->prioridade_atual = prioridade;
+        this->pid = pid;
     }
     // Gets
     int getChegada(){
@@ -29,12 +31,14 @@ public:
     }
     int getPrioridade(){
         return this->prioridade;
+    };
+    int getPid(){
+        return this->pid;
     }
     // Sets
     void setDuracaoObservada(int d){
         this->duracao_observada = d;
     }
-
     void decDuracao(int d){
         if(d > this->duracao){
             this->duracao = 0;
@@ -42,19 +46,16 @@ public:
             this->duracao -= d;
         }
     }
-
 };
-
-
 
 class FilaRR{
 private:
-    list<Processo> processos;
-    int quantum = 1;    // Acredito que equivalente ao slice
+    vector<Processo> processos;
+    int quantum = 1;    
     int time;
-    list<int> fila;
+    vector<int> fila;
 public:
-    FilaRR(list<Processo> processos){
+    FilaRR(vector<Processo> processos){
         this->processos = processos;
         this->time = 0;
         int pa = 1000;
@@ -63,7 +64,7 @@ public:
         // Como iterar sobre uma lista
         // Esse metodo so serve se a ordem do txt for modificada
         // Do jeito que esta e inutil
-        list<Processo> :: iterator it;
+        vector<Processo> :: iterator it;
         for(it = processos.begin(); it != processos.end(); ++it){
             if(it->getChegada() < pa){
                 pa = it->getChegada();
@@ -82,20 +83,20 @@ public:
         return this->time;
     }
     void getPilha(){
-        list<int> :: iterator it;
+        vector<int> :: iterator it;
         cout << "fila: ";
         for(it = this->fila.begin(); it != this->fila.end(); ++it){
-            cout << *it << " ";
+            cout << this->processos[*it].getPid() << " ";
         }
         cout << endl;
     }
 
     int tic(){
-        list<Processo> :: iterator it, it2;
+        vector<Processo> :: iterator it, it2;
         int idx=0;
         if(this->fila.empty()){
-            this->time += this->quantum;
             int flag = 0;
+            this->time += this->quantum;
             for(it = this->processos.begin(); it != this->processos.end(); ++it){
                 if(it->getChegada() == this->time){
                     flag = 1;
@@ -105,12 +106,12 @@ public:
             }
             if(flag){
                 this->fila.push_back(idx);
-            } else{
-                return 0;
             }
+            return 0;
+            
         } 
         int idxAtual = this->fila.front();
-        this->fila.pop_front();
+        this->fila.erase(this->fila.begin());
         //cout << "idxAtual: " << idxAtual << endl; 
 
         // it = processo[idxAtual]
@@ -161,19 +162,19 @@ private:
     int nFilas;
     vector<FilaRR> filas; 
 public:
-    CPU(list<Processo> processos){
+    CPU(vector<Processo> processos){
         this->nFilas = 5;
         int idx = 0;
-        list<Processo> :: iterator it;
-        vector<list<Processo>> listP;
-        // Vai mandando um processo pra cada FilaRR
+        vector<Processo> :: iterator it;
+        vector<vector<Processo>> listP;
+        //Vai mandando um processo pra cada FilaRR
         for(int i = 0; i < this->nFilas; i++){
-            list<Processo> p;
+            vector<Processo> p;
             listP.push_back(p);            
         }
         while(!processos.empty()){
             listP[processos.front().getPrioridade()].push_back(processos.front());
-            processos.pop_front();
+            processos.erase(processos.begin());
         }
         for (int i = 0; i < nFilas; i++){
             this->filas.push_back(FilaRR(listP[i]));
@@ -203,7 +204,7 @@ public:
 };
 
 int main(int argc, char *argv[]) {
-    list<Processo> processos;
+    vector<Processo> processos;
     int numCPU      = atoi(argv[1]); //O número de CPUs disponíveis
     // Pinho acredita que nao precisa passar o slice
     //int slice       = atoi(argv[2]); //Duração do slice de CPU entregue a cada processo
@@ -221,6 +222,7 @@ int main(int argc, char *argv[]) {
     ifstream processosFile (nameFile);
     if (processosFile.is_open())
     {
+        int pid = 0;
         getline (processosFile,line, ',');
         while (! processosFile.eof() )
         {
@@ -233,11 +235,12 @@ int main(int argc, char *argv[]) {
             prioridade = stoi(line, 0, 10);
             getline (processosFile,line, ',');
 
-            processos.push_back(Processo(chegada, duracao, memoria, prioridade));
+            processos.push_back(Processo(chegada, duracao, memoria, prioridade, pid));
             cout << "Chegada    : " << chegada << endl;
             cout << "Duração    : " << duracao << endl;
             cout << "Memória    : " << memoria << endl;
             cout << "Prioridade : " << prioridade << "\n" << endl;
+            pid++;
         }
         processosFile.close();
         // cout << "tam: " << processos.size() << endl;
