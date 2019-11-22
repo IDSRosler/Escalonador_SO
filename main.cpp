@@ -55,7 +55,7 @@ public:
         this->time = 0;
         int pa = 1000;
         int idx = 0;
-        int processoAtual = 0;
+        int processoAtualIdx = 0;
         // Como iterar sobre uma lista
         // Esse metodo so serve se a ordem do txt for modificada
         // Do jeito que esta e inutil
@@ -63,11 +63,13 @@ public:
         for(it = processos.begin(); it != processos.end(); ++it){
             if(it->getChegada() < pa){
                 pa = it->getChegada();
-                processoAtual = idx;
+                processoAtualIdx = idx;
             }
             idx++;
         }
-        fila.push_back(processoAtual);
+        if(pa == 0){
+            fila.push_back(processoAtualIdx);
+        }
         this->time = 0;
     }
 // Gets
@@ -89,7 +91,19 @@ public:
         int idx=0;
         if(this->fila.empty()){
             this->time += this->quantum;
-            return 0;
+            int flag = 0;
+            for(it = this->processos.begin(); it != this->processos.end(); ++it){
+                if(it->getChegada() == this->time){
+                    flag = 1;
+                    break;
+                }
+                idx++;
+            }
+            if(flag){
+                this->fila.push_back(idx);
+            } else{
+                return 0;
+            }
         } 
         int idxAtual = this->fila.front();
         this->fila.pop_front();
@@ -150,12 +164,16 @@ public:
         vector<list<Processo>> listP;
         // Vai mandando um processo pra cada FilaRR
         while(!processos.empty()){
-            listP[idx].push_back(processos.front());
+            if(idx < nFilas){
+                list<Processo> p;
+                p.push_back(processos.front());
+                listP.push_back(p);
+            } else{
+            listP[idx%nFilas].push_back(processos.front());
+            }
             processos.pop_front();
             idx++;
-            if(idx = nFilas){
-                idx = 0;
-            }
+            
         }
         for (int i = 0; i < nFilas; i++){
             this->filas.push_back(FilaRR(listP[i]));
@@ -168,6 +186,15 @@ public:
             naoTerminou += it->tic();
         }
         return naoTerminou;
+    }
+    void getInfo(){
+        list<FilaRR> :: iterator it;
+        int idx = 0;
+        for(it = this->filas.begin(); it != this->filas.end(); ++it){
+            cout << "Fila(" << idx << "): ";
+            it->getPilha();
+            idx++;
+        }
     }
 
 };
@@ -218,10 +245,10 @@ int main(int argc, char *argv[]) {
         // Vamos enxendo as filas na medida que vao aparecendo novos processos
         // Ideia: criar uma classe CPU que gerencia a quantidade de filasRR na CPU
         // Criar uma classe escalonador que gerencia os processos para as CPUs 
-        FilaRR fr = FilaRR(processos);
-        fr.getPilha();
-        while(fr.tic()){
-            fr.getPilha();
+        CPU c = CPU(2, processos);
+        c.getInfo();
+        while(c.tic()){
+            c.getInfo();
         }
     }
     else cout << "Unable to open file" << endl;
