@@ -231,6 +231,7 @@ public:
         // Ve se o processo[idxAtual] ja terminou
         // Se sim armazena a duracao
         // Se nao insere ele novamente no final da fila
+        cout << "Duracao: " << it->getDuracao() << endl;
         if(it->getDuracao() == 0){
             it->setDuracaoObservada(this->time);
         } else{
@@ -276,6 +277,7 @@ public:
     int tic(){
         vector<FilaRR> :: iterator it;
         int filaAtual = -1;
+        int naoTerminou;
         for(int i=0; i<this->filas.size();i++){
             if(!(this->filas[i].isEmpty())){
                 filaAtual = i;
