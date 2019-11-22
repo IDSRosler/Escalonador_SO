@@ -10,7 +10,7 @@ using namespace std;
 
 class Processo{
 private:
-    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual, pid, decPrioridade;
+    int chegada, duracao, memoria, prioridade, lancamento, duracao_observada, duracao_projetada, prioridade_atual, pid, decPrioridade, timeExe;
 
 public:
     Processo(int chegada, int duracao, int memoria, int prioridade, int pid){
@@ -22,6 +22,7 @@ public:
         this->prioridade_atual = prioridade;
         this->pid = pid;
         this->decPrioridade = 1;
+        this->timeExe = 0;
     }
     // Gets
     int getChegada(){
@@ -30,11 +31,14 @@ public:
     int getDuracao(){
         return this->duracao;
     }
-    int getPrioridade(){
-        return this->prioridade;
+    int getPrioridade_atual(){
+        return this->prioridade_atual;
     };
     int getPid(){
         return this->pid;
+    }
+    int getTimeExe(){
+        return this->timeExe;
     }
     // Sets
     void setDuracaoObservada(int d){
@@ -66,6 +70,13 @@ public:
                     this->prioridade_atual += 1;
                 }
             }
+        }
+    }
+    void incTimeExe(){
+        this->timeExe += 1;
+        if(this->timeExe % 10 == 0){
+            cout << "ChagePrioridade" << endl;
+            this->changePrioridade();
         }
     }
 };
@@ -112,10 +123,64 @@ public:
         }
         cout << endl;
     }
+    int getProcessoTimeExe(int n){
+        return this->processos[n].getTimeExe();
+    }
+    Processo getUltimoProcesso(){
+        return this->processos[this->fila.back()];
+    }
+    int getNumProcessos(){
+        return this->processos.size();
+    }
     int isEmpty(){
         return !(this->fila.size());
     }
+    Processo removeUltimoProcesso(){
+        cout << "Remocao de processo: " << endl;
+        cout << "Size fila: " << this->fila.size() << endl;
+        cout << "Size processos: " << this->processos.size() << endl;
+        Processo p = this->processos[this->fila.back()];
+        this->processos.erase(this->processos.begin() + this->fila.back());
+        this->fila.pop_back();
+        cout << "Size fila:" << this->fila.size() << endl;
+        cout << "Size processos" << this->processos.size() << endl;
+        return p;
+    }
+    void atualizaFila(){
+        Processo p = this->processos.back();
+        int idx = -1;
+        for(int i = 0; i< this->processos.size(); i++){
+            if(p.getPid() == this->processos[i].getPid()){
+                idx = i;
+            }
+        }
+        // Bota o ultimo processo no final da fila
+        if(idx != -1)
+            this->fila.push_back(idx);
 
+         
+    }
+    void pushProcesso(Processo p){
+        this->processos.push_back(p);
+    }
+    void incTime(){
+        vector<Processo> :: iterator it;
+        int idx=0;
+        this->time += this->quantum;
+        if(this->fila.empty()){
+            int flag = 0;
+            for(it = this->processos.begin(); it != this->processos.end(); ++it){
+                if(it->getChegada() == this->time){
+                    flag = 1;
+                    break;
+                }
+                idx++;
+            }
+            if(flag){
+                this->fila.push_back(idx);
+            }
+        }
+    }
     int tic(){
         vector<Processo> :: iterator it, it2;
         int idx=0;
@@ -146,9 +211,10 @@ public:
             }
             idx++;
         }
-        //cout << it->getDuracao() << endl;
         it->decDuracao(this->quantum);
-        //cout << it->getDuracao() << endl;
+        it->incTimeExe();
+         
+
         this->time += this->quantum;
         
         // Testa se entra algum processo NOVO no fim da fila
@@ -198,7 +264,7 @@ public:
             listP.push_back(p);            
         }
         while(!processos.empty()){
-            listP[processos.front().getPrioridade()].push_back(processos.front());
+            listP[processos.front().getPrioridade_atual()].push_back(processos.front());
             processos.erase(processos.begin());
         }
         for (int i = 0; i < nFilas; i++){
@@ -216,15 +282,31 @@ public:
                 break;
             }
         }
+        cout << filaAtual << endl;
         if(filaAtual != -1){
             this->filas[filaAtual].tic();
+            for(int i=0; i<this->filas.size();i++){
+                if(filaAtual != i){
+                    this->filas[i].incTime();
+                }
+            }
+            // cout << "Prioridade Processo: " << this->filas[filaAtual].getUltimoProcesso().getPrioridade() << endl;
+            // cout << "Prioridade da fila Atual: " << filaAtual << endl;
+            
+            if(this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual() != filaAtual){    
+                Processo p = this->filas[filaAtual].removeUltimoProcesso();
+                int priorP = p.getPrioridade_atual();
+                cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl; 
+                // Insere corretamente, atualizar as filas
+                this->filas[priorP].pushProcesso(p);
+                cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl;
+                this->filas[priorP].atualizaFila();
+            }
+            return 1;
+        } else{
+
+            return 0;
         }
-       
-        int naoTerminou = 0;
-        for(it = this->filas.begin(); it != this->filas.end(); ++it){
-            naoTerminou += it->tic();
-        }
-        return naoTerminou;
     }
     void getInfo(){
         vector<FilaRR> :: iterator it;
