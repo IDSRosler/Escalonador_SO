@@ -118,9 +118,12 @@ public:
     void getPilha(){
         vector<int> :: iterator it;
         cout << "fila: ";
-        for(it = this->fila.begin(); it != this->fila.end(); ++it){
-            cout << this->processos[*it].getPid() << " ";
+        for(int i = 0; i < this->fila.size(); i++){
+            cout << this->processos[this->fila[i]].getPid() << " ";
         }
+        // for(it = this->fila.begin(); it != this->fila.end(); ++it){
+        //     cout << this->processos[*it].getPid() << " ";
+        // }
         cout << endl;
     }
     int getProcessoTimeExe(int n){
@@ -134,6 +137,9 @@ public:
     }
     int isEmpty(){
         return !(this->fila.size());
+    }
+    int getTamFila(){
+        return this->fila.size();
     }
     Processo removeUltimoProcesso(){
         cout << "Remocao de processo: " << endl;
@@ -157,11 +163,19 @@ public:
         // Bota o ultimo processo no final da fila
         if(idx != -1)
             this->fila.push_back(idx);
+        for(int i = 0; i < this->processos.size(); i++){
+                cout << "PID: " << this->processos[i].getPid() << endl;
+        }
 
          
     }
     void pushProcesso(Processo p){
+        
         this->processos.push_back(p);
+        // for(int i = 0; i < this->processos.size(); i++){
+        //         cout << "PID: " << this->processos[i].getPid() << endl;
+        // }
+        
     }
     void incTime(){
         vector<Processo> :: iterator it;
@@ -202,18 +216,21 @@ public:
         } 
         int idxAtual = this->fila.front();
         this->fila.erase(this->fila.begin());
+        
         //cout << "idxAtual: " << idxAtual << endl; 
 
-        // it = processo[idxAtual]
-        for(it = processos.begin(); it != processos.end(); ++it){
-            if(idx == idxAtual){
-                break;
-            }
-            idx++;
-        }
-        it->decDuracao(this->quantum);
-        it->incTimeExe();
-         
+        // for(it = processos.begin(); it != processos.end(); ++it){
+        //     if(idx == idxAtual){
+        //         break;
+        //     }
+        //     idx++;
+        // }
+        // it->decDuracao(this->quantum);
+        // it->incTimeExe();
+        cout << "idxAtual: " << idxAtual << endl;
+        this->processos[idxAtual].decDuracao(this->quantum);
+        this->processos[idxAtual].incTimeExe();
+        
 
         this->time += this->quantum;
         
@@ -226,18 +243,27 @@ public:
             }
             idx++;
         }
+        
 
 
         // Ve se o processo[idxAtual] ja terminou
         // Se sim armazena a duracao
         // Se nao insere ele novamente no final da fila
-        cout << "Duracao: " << it->getDuracao() << endl;
-        if(it->getDuracao() == 0){
-            it->setDuracaoObservada(this->time);
+
+       
+        // for(it = processos.begin(); it != processos.end(); ++it){
+        //     if(idx == idxAtual){
+        //         break;
+        //     }
+        //     idx++;
+        // }
+        cout << "Duracao: " << this->processos[idxAtual].getDuracao() << endl;
+        if(this->processos[idxAtual].getDuracao() == 0){
+            this->processos[idxAtual].setDuracaoObservada(this->time);
         } else{
             this->fila.push_back(idxAtual);
         }
-
+        
         int d=0;
         for(it = processos.begin(); it != processos.end(); ++it){
             d+= it->getDuracao();
@@ -284,25 +310,33 @@ public:
                 break;
             }
         }
-        cout << filaAtual << endl;
+        cout << "filaAtual: " << filaAtual << endl;
         if(filaAtual != -1){
+            // Seg Fault aqui
             this->filas[filaAtual].tic();
+            
             for(int i=0; i<this->filas.size();i++){
                 if(filaAtual != i){
                     this->filas[i].incTime();
                 }
             }
+            
             // cout << "Prioridade Processo: " << this->filas[filaAtual].getUltimoProcesso().getPrioridade() << endl;
             // cout << "Prioridade da fila Atual: " << filaAtual << endl;
-            
+            //cout << "this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual(): " << this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual() << endl;
             if(this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual() != filaAtual){    
-                Processo p = this->filas[filaAtual].removeUltimoProcesso();
-                int priorP = p.getPrioridade_atual();
-                cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl; 
-                // Insere corretamente, atualizar as filas
-                this->filas[priorP].pushProcesso(p);
-                cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl;
-                this->filas[priorP].atualizaFila();
+                if(this->filas[filaAtual].getTamFila()){
+                    Processo p = this->filas[filaAtual].removeUltimoProcesso();
+                    int priorP = p.getPrioridade_atual();
+                    //cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl; 
+                    // Insere corretamente, atualizar as filas
+                    //this->filas[priorP]
+                    this->filas[priorP].pushProcesso(p);
+                    //cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl;
+                    this->filas[priorP].atualizaFila();
+                } else{
+                    return 0;
+                }
             }
             return 1;
         } else{
