@@ -120,6 +120,7 @@ public:
         cout << "fila: ";
         for(int i = 0; i < this->fila.size(); i++){
             cout << this->processos[this->fila[i]].getPid() << " ";
+            // cout << this->fila[i] << " ";
         }
         // for(it = this->fila.begin(); it != this->fila.end(); ++it){
         //     cout << this->processos[*it].getPid() << " ";
@@ -150,16 +151,21 @@ public:
         cout << endl;   
     }
     Processo removeUltimoProcesso(){
-        
+        this->getPilha();
+        this->getProcessInfo();
         cout << "Remocao de processo: " << endl;
         cout << "Size fila: " << this->fila.size() << endl;
         cout << "Size processos: " << this->processos.size() << endl;
         Processo p = this->processos[this->fila.back()];
-        this->getPilha();
+        for(int i = 0; i < this->fila.size(); i++){
+            if(this->fila[i] > this->fila.back())
+                this->fila[i] -= 1;
+        }
+        
         //Depois dessa linha a pilha fica com valores errados
         this->processos.erase(this->processos.begin() + this->fila.back());
-        this->getPilha();
         this->fila.pop_back();
+        this->getProcessInfo();
         this->getPilha();
         cout << "Size fila:" << this->fila.size() << endl;
         cout << "Size processos: " << this->processos.size() << endl;
