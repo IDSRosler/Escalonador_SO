@@ -11,7 +11,15 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d0eebeb-fd9f-477f-8393-29c0ae50fc24" name="Default Changelist" comment="" />
+    <list default="true" id="0d0eebeb-fd9f-477f-8393-29c0ae50fc24" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Escalonador_de_processos.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Escalonador_de_processos.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Escalonador_de_processos.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Escalonador_de_processos.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Escalonador_de_processos" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Escalonador_de_processos" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/processos.txt" beforeDir="false" afterPath="$PROJECT_DIR$/processos.txt" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,15 +30,21 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1Tc4xfJZcyzWkrR5NZKQbelHGkV" />
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -45,7 +59,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="Escalonador_de_processos" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="1 1 100 processos.txt" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Escalonador_de_processos" TARGET_NAME="Escalonador_de_processos" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Escalonador_de_processos" RUN_TARGET_NAME="Escalonador_de_processos">
+    <configuration name="Escalonador_de_processos" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="1 256 processos.txt" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Escalonador_de_processos" TARGET_NAME="Escalonador_de_processos" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Escalonador_de_processos" RUN_TARGET_NAME="Escalonador_de_processos">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -62,10 +76,22 @@
       <option name="presentableId" value="Default" />
       <updated>1573746298004</updated>
       <workItem from="1573746299655" duration="6369000" />
+      <workItem from="1575307023920" duration="18404000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

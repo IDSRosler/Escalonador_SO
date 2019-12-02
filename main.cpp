@@ -84,7 +84,7 @@ public:
 class FilaRR{
 private:
     vector<Processo> processos;
-    int quantum = 1;    
+    int quantum = 1;
     int time;
     vector<int> fila;
 public:
@@ -148,7 +148,7 @@ public:
         for(it = processos.begin(); it != processos.end(); ++it){
             cout << it->getPid() << " ";
         }
-        cout << endl;   
+        cout << endl;
     }
     Processo removeUltimoProcesso(){
         this->getPilha();
@@ -161,7 +161,7 @@ public:
             if(this->fila[i] > this->fila.back())
                 this->fila[i] -= 1;
         }
-        
+
         //Depois dessa linha a pilha fica com valores errados
         this->processos.erase(this->processos.begin() + this->fila.back());
         this->fila.pop_back();
@@ -183,18 +183,18 @@ public:
         if(idx != -1)
             this->fila.push_back(idx);
         for(int i = 0; i < this->processos.size(); i++){
-                cout << "PID: " << this->processos[i].getPid() << endl;
+            cout << "PID: " << this->processos[i].getPid() << endl;
         }
 
-         
+
     }
     void pushProcesso(Processo p){
-        
+
         this->processos.push_back(p);
         // for(int i = 0; i < this->processos.size(); i++){
         //         cout << "PID: " << this->processos[i].getPid() << endl;
         // }
-        
+
     }
     void incTime(){
         vector<Processo> :: iterator it;
@@ -231,12 +231,12 @@ public:
                 this->fila.push_back(idx);
             }
             return 0;
-            
-        } 
+
+        }
         int idxAtual = this->fila.front();
         this->fila.erase(this->fila.begin());
-        
-        //cout << "idxAtual: " << idxAtual << endl; 
+
+        //cout << "idxAtual: " << idxAtual << endl;
 
         // for(it = processos.begin(); it != processos.end(); ++it){
         //     if(idx == idxAtual){
@@ -249,10 +249,10 @@ public:
         //cout << "idxAtual: " << idxAtual << endl;
         this->processos[idxAtual].decDuracao(this->quantum);
         this->processos[idxAtual].incTimeExe();
-        
+
 
         this->time += this->quantum;
-        
+
         // Testa se entra algum processo NOVO no fim da fila
         // Se sim insere no fim da fila
         idx = 0;
@@ -262,14 +262,14 @@ public:
             }
             idx++;
         }
-        
+
 
 
         // Ve se o processo[idxAtual] ja terminou
         // Se sim armazena a duracao
         // Se nao insere ele novamente no final da fila
 
-       
+
         // for(it = processos.begin(); it != processos.end(); ++it){
         //     if(idx == idxAtual){
         //         break;
@@ -282,22 +282,22 @@ public:
         } else{
             this->fila.push_back(idxAtual);
         }
-        
+
         int d=0;
         for(it = processos.begin(); it != processos.end(); ++it){
             d+= it->getDuracao();
         }
         if(d == 0){
             return 0;
-        }        
+        }
         return 1;
-    } 
+    }
 };
 
 class CPU{
 private:
     int nFilas;
-    vector<FilaRR> filas; 
+    vector<FilaRR> filas;
 public:
     CPU(vector<Processo> processos){
         this->nFilas = 5;
@@ -307,7 +307,7 @@ public:
         //Vai mandando um processo pra cada FilaRR
         for(int i = 0; i < this->nFilas; i++){
             vector<Processo> p;
-            listP.push_back(p);            
+            listP.push_back(p);
         }
         while(!processos.empty()){
             listP[processos.front().getPrioridade_atual()].push_back(processos.front());
@@ -317,7 +317,7 @@ public:
             this->filas.push_back(FilaRR(listP[i]));
         }
     }
-    // Errado, teria que executar somente uma das filas 
+    // Errado, teria que executar somente uma das filas
     // e olhar a prioridade
     int tic(){
         vector<FilaRR> :: iterator it;
@@ -333,21 +333,21 @@ public:
         if(filaAtual != -1){
             // Seg Fault aqui
             this->filas[filaAtual].tic();
-            
+
             for(int i=0; i<this->filas.size();i++){
                 if(filaAtual != i){
                     this->filas[i].incTime();
                 }
             }
-            
+
             // cout << "Prioridade Processo: " << this->filas[filaAtual].getUltimoProcesso().getPrioridade() << endl;
             // cout << "Prioridade da fila Atual: " << filaAtual << endl;
             //cout << "this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual(): " << this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual() << endl;
-            if(this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual() != filaAtual){    
+            if(this->filas[filaAtual].getUltimoProcesso().getPrioridade_atual() != filaAtual){
                 if(this->filas[filaAtual].getTamFila()){
                     Processo p = this->filas[filaAtual].removeUltimoProcesso();
                     int priorP = p.getPrioridade_atual();
-                    //cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl; 
+                    //cout << "Fila[" << priorP << "] :" << this->filas[priorP].getNumProcessos() << endl;
                     // Insere corretamente, atualizar as filas
                     //this->filas[priorP]
                     this->filas[priorP].pushProcesso(p);
@@ -372,8 +372,82 @@ public:
             idx++;
         }
     }
-  
 
+};
+
+class Escalonador{
+private:
+    int nCPUs;
+    vector<CPU> CPUs;
+public:
+    Escalonador(vector<Processo> processos, int numCPU){
+        this->nCPUs = numCPU;
+        vector<vector<Processo>> listP;
+        vector<vector<vector<Processo>>> cpus;
+
+//        for (int l = 0; l < this->nCPUs; ++l) {
+//            CPU p;
+//        }
+
+        //Vai mandando um processo pra cada FilaRR
+        for(int i = 0; i < 5; i++){
+            vector<Processo> p;
+            listP.push_back(p);
+        }
+
+        //criando filas para as cpus
+        for(int i = 0; i < this->nCPUs; i++) {
+            cpus.push_back(vector<vector<Processo> >());
+            for (int j = 0; j < 5; ++j) {
+                cpus[i].push_back(vector<Processo>());
+            }
+        }
+
+        while(!processos.empty()){
+            int ultimo = 1000;
+            int index = -1;
+            for (int i = 0; i < this->nCPUs; ++i) {
+                for (int j = 0; j < 5; ++j) {
+                    if (processos.front().getPrioridade_atual() == j){
+                        if (cpus[i][j].size() < ultimo){
+//                            cout << cpus[i][j].size() << endl;
+                            ultimo = cpus[i][j].size();
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            cpus[index][processos.front().getPrioridade_atual()].push_back(processos.front());
+            processos.erase(processos.begin());
+        }
+
+        for (int m = 0; m < this->nCPUs; ++m) {
+            vector<Processo> k;
+            for (int l = 0; l < 5; ++l) {
+                for (int i = 0; i < cpus[m][l].size(); ++i) {
+                    k.push_back(cpus[m][l].front());
+                    cpus[m][l].erase(cpus[m][l].begin());
+                }
+
+            }
+
+            for (int j = 0; j < k.size(); ++j) {
+                cout << k[j].getPrioridade_atual() << endl;
+            }
+            cout << "\n";
+            CPU cp(k);
+            this->CPUs.push_back(cp);
+        }
+    }
+
+    int ticCPU(int index){
+        return this->CPUs[index].tic();
+    }
+
+    void getInfoCPU(int index){
+        this->CPUs[index].getInfo();
+    }
 };
 
 int main(int argc, char *argv[]) {
@@ -423,12 +497,24 @@ int main(int argc, char *argv[]) {
         // Temos que escolher um numero fixo de filasRR por CPU
         // Vamos enxendo as filas na medida que vao aparecendo novos processos
         // Ideia: criar uma classe CPU que gerencia a quantidade de filasRR na CPU
-        // Criar uma classe escalonador que gerencia os processos para as CPUs 
-        CPU c = CPU(processos);
-        c.getInfo();
-        while(c.tic()){
-            c.getInfo();
+        // Criar uma classe escalonador que gerencia os processos para as CPUs
+
+        Escalonador e(processos, numCPU);
+        for (int i = 0; i < numCPU; ++i) {
+            cout << "CPU[" << i << "]" << endl;
+            e.getInfoCPU(i);
+            cout << "**********************************************" << endl;
+            while(e.ticCPU(i)){
+                e.getInfoCPU(i);
+                cout << "**********************************************" << endl;
+            }
         }
+
+//        CPU c = CPU(processos);
+//        c.getInfo();
+//        while(c.tic()){
+//            c.getInfo();
+//        }
     }
     else cout << "Unable to open file" << endl;
 
@@ -454,4 +540,3 @@ int main(int argc, char *argv[]) {
 //        cout << "Prioridade : " << proc.prioridade << "\n" << endl;
 //    }
 }
-
