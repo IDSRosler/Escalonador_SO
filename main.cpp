@@ -141,15 +141,28 @@ public:
     int getTamFila(){
         return this->fila.size();
     }
+    void getProcessInfo(){
+        vector<Processo> :: iterator it;
+        cout << "Info: ";
+        for(it = processos.begin(); it != processos.end(); ++it){
+            cout << it->getPid() << " ";
+        }
+        cout << endl;   
+    }
     Processo removeUltimoProcesso(){
+        
         cout << "Remocao de processo: " << endl;
         cout << "Size fila: " << this->fila.size() << endl;
         cout << "Size processos: " << this->processos.size() << endl;
         Processo p = this->processos[this->fila.back()];
+        this->getPilha();
+        //Depois dessa linha a pilha fica com valores errados
         this->processos.erase(this->processos.begin() + this->fila.back());
+        this->getPilha();
         this->fila.pop_back();
+        this->getPilha();
         cout << "Size fila:" << this->fila.size() << endl;
-        cout << "Size processos" << this->processos.size() << endl;
+        cout << "Size processos: " << this->processos.size() << endl;
         return p;
     }
     void atualizaFila(){
@@ -227,7 +240,7 @@ public:
         // }
         // it->decDuracao(this->quantum);
         // it->incTimeExe();
-        cout << "idxAtual: " << idxAtual << endl;
+        //cout << "idxAtual: " << idxAtual << endl;
         this->processos[idxAtual].decDuracao(this->quantum);
         this->processos[idxAtual].incTimeExe();
         
