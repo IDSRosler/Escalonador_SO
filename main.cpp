@@ -111,6 +111,9 @@ public:
         this->time = 0;
     }
 // Gets
+    int getSizeProcess(){
+        return this->processos.size();
+    }
 
     int getTime(){
         return this->time;
@@ -236,17 +239,6 @@ public:
         int idxAtual = this->fila.front();
         this->fila.erase(this->fila.begin());
 
-        //cout << "idxAtual: " << idxAtual << endl;
-
-        // for(it = processos.begin(); it != processos.end(); ++it){
-        //     if(idx == idxAtual){
-        //         break;
-        //     }
-        //     idx++;
-        // }
-        // it->decDuracao(this->quantum);
-        // it->incTimeExe();
-        //cout << "idxAtual: " << idxAtual << endl;
         this->processos[idxAtual].decDuracao(this->quantum);
         this->processos[idxAtual].incTimeExe();
 
@@ -263,19 +255,9 @@ public:
             idx++;
         }
 
-
-
         // Ve se o processo[idxAtual] ja terminou
         // Se sim armazena a duracao
         // Se nao insere ele novamente no final da fila
-
-
-        // for(it = processos.begin(); it != processos.end(); ++it){
-        //     if(idx == idxAtual){
-        //         break;
-        //     }
-        //     idx++;
-        // }
         cout << "Duracao: " << this->processos[idxAtual].getDuracao() << endl;
         if(this->processos[idxAtual].getDuracao() == 0){
             this->processos[idxAtual].setDuracaoObservada(this->time);
@@ -373,6 +355,13 @@ public:
         }
     }
 
+    int getSize(int i){
+        return this->filas[i].getSizeProcess();
+    }
+
+    int getTimeProcess(int i, int j){
+        return this->filas[i].getProcessoTimeExe(j);
+    }
 };
 
 class Escalonador{
@@ -384,10 +373,6 @@ public:
         this->nCPUs = numCPU;
         vector<vector<Processo>> listP;
         vector<vector<vector<Processo>>> cpus;
-
-//        for (int l = 0; l < this->nCPUs; ++l) {
-//            CPU p;
-//        }
 
         //Vai mandando um processo pra cada FilaRR
         for(int i = 0; i < 5; i++){
@@ -425,11 +410,11 @@ public:
         for (int m = 0; m < this->nCPUs; ++m) {
             vector<Processo> k;
             for (int l = 0; l < 5; ++l) {
-                for (int i = 0; i < cpus[m][l].size(); ++i) {
+                int size = cpus[m][l].size();
+                for (int i = 0; i < size; ++i) {
                     k.push_back(cpus[m][l].front());
                     cpus[m][l].erase(cpus[m][l].begin());
                 }
-
             }
 
             for (int j = 0; j < k.size(); ++j) {
@@ -438,6 +423,16 @@ public:
             cout << "\n";
             CPU cp(k);
             this->CPUs.push_back(cp);
+        }
+    }
+
+    void processoCPU(){
+        for (int i = 0; i < this->CPUs.size(); ++i) {
+            for (int j = 0; j < 5; ++j) {
+                for (int k = 0; k < this->CPUs[i].getSize(j); ++k) {
+                    cout << this->CPUs[i].getTimeProcess(j, k) << endl;
+                }
+            }
         }
     }
 
@@ -478,7 +473,7 @@ int main(int argc, char *argv[]) {
             duracao = stoi(line, 0, 10);
             getline (processosFile,line, ',');
             memoria = stoi(line, 0, 10);
-            getline (processosFile,line, '\n'); //erro
+            getline (processosFile,line, '\n');
             prioridade = stoi(line, 0, 10);
             getline (processosFile,line, ',');
 
@@ -505,38 +500,13 @@ int main(int argc, char *argv[]) {
             e.getInfoCPU(i);
             cout << "**********************************************" << endl;
             while(e.ticCPU(i)){
+                cout << "CPU[" << i << "]" << endl;
                 e.getInfoCPU(i);
                 cout << "**********************************************" << endl;
             }
         }
-
-//        CPU c = CPU(processos);
-//        c.getInfo();
-//        while(c.tic()){
-//            c.getInfo();
-//        }
+        e.processoCPU();
     }
     else cout << "Unable to open file" << endl;
-
-
-//    while (processosFile) {
-//
-//        int chegada, duracao, memoria, prioridade;
-//
-//        processosFile >> chegada;
-//        processosFile >> duracao;
-//        processosFile >> memoria;
-//        processosFile >> prioridade;
-//
-//        Processo proc(chegada, duracao, memoria, prioridade);
-//
-//        processos.push_back(proc);
-//    }
-//
-//    for (Processo proc : processos) {
-//        cout << "Chegada    : " << proc.chegada << endl;
-//        cout << "Duração    : " << proc.duracao << endl;
-//        cout << "Memória    : " << proc.memoria << endl;
-//        cout << "Prioridade : " << proc.prioridade << "\n" << endl;
-//    }
 }
+// teste se o processo ta na fila na hora do tic

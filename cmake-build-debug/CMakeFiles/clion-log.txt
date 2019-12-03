@@ -1,4 +1,4 @@
-/home/igor/Downloads/CLion-2019.2.5/clion-2019.2.5/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/igor/CLionProjects/Escalonador_de_processos
+/home/igor/Downloads/CLion-2019.2.5/clion-2019.2.5/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/igor/Escalonador_SO
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/igor/CLionProjects/Escalonador_de_processos/cmake-build-debug
+-- Build files have been written to: /home/igor/Escalonador_SO/cmake-build-debug

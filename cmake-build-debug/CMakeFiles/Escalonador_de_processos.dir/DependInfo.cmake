@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/igor/CLionProjects/Escalonador_de_processos/main.cpp" "/home/igor/CLionProjects/Escalonador_de_processos/cmake-build-debug/CMakeFiles/Escalonador_de_processos.dir/main.cpp.o"
+  "/home/igor/Escalonador_SO/main.cpp" "/home/igor/Escalonador_SO/cmake-build-debug/CMakeFiles/Escalonador_de_processos.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

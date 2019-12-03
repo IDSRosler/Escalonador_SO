@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/igor/CLionProjects/Escalonador_de_processos/main.cpp
+/home/igor/Escalonador_SO/main.cpp
 stdlib.h
 -
 list

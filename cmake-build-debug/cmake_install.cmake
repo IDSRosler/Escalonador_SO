@@ -1,4 +1,4 @@
-# Install script for directory: /home/igor/CLionProjects/Escalonador_de_processos
+# Install script for directory: /home/igor/Escalonador_SO
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/igor/CLionProjects/Escalonador_de_processos/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/igor/Escalonador_SO/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
